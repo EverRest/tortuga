@@ -34,8 +34,9 @@ Route::group([ 'prefix' => 'password', 'namespace' => 'Password', 'name' => 'pas
 });
 
 // Song Routes
-Route::group([ 'prefix' => 'song', 'namespace' => 'Song', 'name' => 'song.', 'middleware' => 'api'], function () {
+Route::group([ 'prefix' => 'song', 'namespace' => 'Song', 'name' => 'song.', 'middleware' => 'auth:api'], function () {
     Route::post('/create', 'SongController@create')->name('create');
+    Route::post('/upload', 'SongController@upload')->name('upload');
     Route::put('/update/{id}', 'SongController@update')->name('update');
     Route::delete('/delete/{id}', 'SongController@delete')->name('delete');
     Route::get('/show/{id}', 'SongController@item')->name('item');

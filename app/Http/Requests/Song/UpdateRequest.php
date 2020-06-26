@@ -4,7 +4,12 @@ namespace App\Http\Requests\Song;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateSongRequest extends FormRequest
+/**
+ * Class UpdateRequest
+ *
+ * @package App\Http\Requests\Song
+ */
+class UpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +29,9 @@ class CreateSongRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'fileName' => 'sometimes|string|max:100',
+            'title'    => 'sometimes|string|max:100',
+            'artist'   => 'sometimes|string|max:100'
         ];
     }
 }

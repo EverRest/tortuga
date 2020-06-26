@@ -4,7 +4,12 @@ namespace App\Http\Requests\Song;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateSongRequest extends FormRequest
+/**
+ * Class UploadRequest
+ *
+ * @package App\Http\Requests\Song
+ */
+class UploadRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,7 +18,7 @@ class UpdateSongRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +29,7 @@ class UpdateSongRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'file' => 'required|mimes:application/octet-stream,audio/mpeg,mpga,mp3,wav'
         ];
     }
 }

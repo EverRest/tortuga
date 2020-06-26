@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\RegistrationRequest;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -28,13 +30,8 @@ class AuthController extends Controller
      * @param  [string] password_confirmation
      * @return [string] message
      */
-    public function register(Request $request)
+    public function register(RegistrationRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string',
-            'email' => 'required|string|email|unique:users',
-            'password' => 'required|string|confirmed'
-        ]);
         $user = new User([
             'name' => $request->name,
             'email' => $request->email,
@@ -44,10 +41,7 @@ class AuthController extends Controller
 
         $user->save();
 
-        $avatar = Avatar::create($user->name)->getImageObject()->encode('png');
-        Storage::put('avatars/'.$user->id.'/avatar.png', (string) $avatar);
-
-        $user->notify(new SignupActivate($user));
+//        $user->notify(new SignupActivate($user));
 
         return response()->json([
             'message' => 'Successfully created user!'
@@ -83,14 +77,8 @@ class AuthController extends Controller
      * @return [string] token_type
      * @return [string] expires_at
      */
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        $request->validate([
-            'email' => 'required|string|email',
-            'password' => 'required|string',
-            'remember_me' => 'boolean'
-        ]);
-
         $credentials = request(['email', 'password']);
         $credentials['active'] = 1;
         $credentials['deleted_at'] = null;
