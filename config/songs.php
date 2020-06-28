@@ -14,7 +14,8 @@ return [
     */
 
     'paths' => [
-        'tmp' => public_path('storage/app/public/tmp/'),
+        'tmp'  => 'tmp/',
+        'stbl' => 'music/'
     ],
 
 ];

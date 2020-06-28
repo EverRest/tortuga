@@ -9,6 +9,7 @@ use App\Http\Requests\Song\UploadRequest;
 use Illuminate\Http\JsonResponse;
 use App\Song;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 
@@ -34,19 +35,39 @@ class SongController extends Controller
      *
      * @return JsonResponse
      */
-    public function create(CreateRequest $request)
+    public function create(CreateRequest $request): JsonResponse
     {
-        if (!Storage::disk('public')->exists(config('songs.paths.tmp') . $request->fileName ))
-        {
-            dd(config('songs.paths.tmp') . $request->fileName);
-            response()->json([
+        $file_name = $request->fileName;
+        $tmp_path = config('songs.paths.tmp'). $file_name;
+        $stbl_path = config('songs.paths.stbl'). $file_name;
+        $unknown = 'Unknown';
+        $response = [
+            'data' => [
+                'message' => 'Can\'t find uploaded file.',
+                'song' => NULL
+            ]];
+
+        if (Storage::disk('public')->exists($tmp_path)) {
+            if (!Storage::disk('public')->exists($stbl_path))
+                Storage::disk('public')->move($tmp_path ,  $stbl_path);
+
+            $song = Song::firstOrCreate([
+                'user_id' => Auth::user()->id,
+                'title' => $request->title,
+                'artist' => $request->artist,
+                'filename' => $file_name
+            ]);
+
+            return response()->json([
+                'data' => [
+                    'message' => 'Song successfully created.',
+                    'song' => $song
+                ]], Response::HTTP_UNPROCESSABLE_ENTITY);
+        } else {
+            return response()->json([
                 'data' => [
                     'message' => 'Can\'t find uploaded file.',
                 ]], Response::HTTP_UNPROCESSABLE_ENTITY);
-        } else {
-            dd(1);
-            $file = Storage::disk('public')->get(config('songs.paths.tmp') . $request->fileName );
-            dd($file);
         }
     }
 
@@ -59,7 +80,7 @@ class SongController extends Controller
     {
         $file = $request->file;
         $fileName = Str::random(10).'_'.time().'.'.$file->extension();
-        $file->move(config('songs.paths.tmp'), $fileName);
+        $file->move(public_path(config('songs.paths.tmp')), $fileName);
 
         return response()->json([
                 'data' => [
