@@ -20,6 +20,7 @@ class CreateSongsTable extends Migration
                 $table->unsignedBigInteger('user_id')->index();
                 $table->string('title', 255)->default('Unknown');
                 $table->string('artist', 255)->default('Unknown');
+                $table->string('filename', 255)->unique();
                 $table->timestamps();
             });
 
