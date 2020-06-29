@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUsersPlaylistsTable extends Migration
+class CreateSongsPlaylistsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,18 +13,18 @@ class CreateUsersPlaylistsTable extends Migration
      */
     public function up()
     {
-        if (!Schema::hasTable('users_playlists')){
+        if (!Schema::hasTable('songs_playlists')){
             Schema::create(
-                'users_playlists', function (Blueprint $table) {
-                $table->increments('id');
-                $table->bigInteger('user_id')->unsigned()->index();
+                'songs_playlists', function (Blueprint $table) {
+                $table->id();
+                $table->bigInteger('song_id')->unsigned()->index();
                 $table->bigInteger('playlist_id')->unsigned()->index();
             });
 
 
-            Schema::table('users_playlists', function (Blueprint $table) {
-                $table->foreign('user_id')->references('id')
-                    ->on('users')->onDelete('cascade');
+            Schema::table('songs_playlists', function (Blueprint $table) {
+                $table->foreign('song_id')->references('id')
+                    ->on('songs')->onDelete('cascade');
                 $table->foreign('playlist_id')->references('id')
                     ->on('playlists')->onDelete('cascade');
             });
@@ -38,7 +38,7 @@ class CreateUsersPlaylistsTable extends Migration
      */
     public function down()
     {
-        Schema::table('users_playlists', function (Blueprint $table) {
+        Schema::table('songs_playlists', function (Blueprint $table) {
             $table->drop();
         });
     }
