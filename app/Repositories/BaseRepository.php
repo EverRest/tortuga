@@ -1,0 +1,90 @@
+<?php
+
+namespace App\Repositories;
+
+use Illuminate\Database\Eloquent\Model;
+
+/**
+ * Class BaseRepository
+ *
+ * @package App\Repositories
+ */
+abstract class BaseRepository
+{
+    /**
+     * @var string
+     */
+    public $sortBy = 'created_at';
+    /**
+     * @var string
+     */
+    public $sortOrder = 'asc';
+
+    /**
+     * @return mixed
+     */
+    public function all()
+    {
+        return $this->model->orderBy($this->sortBy, $this->sortOrder)->get();
+    }
+
+    /**
+     * @param  int  $paginate
+     *
+     * @return mixed
+     */
+    public function paginated(int $paginate)
+    {
+        return $this->model->orderBy($this->sortBy, $this->sortOrder)
+            ->paginate($paginate);
+    }
+
+    /**
+     * @param  array  $input
+     *
+     * @return mixed
+     */
+    public function create(array $input)
+    {
+        $model = $this->model;
+        $model->fill($input);
+        $model->save();
+
+        return $model;
+    }
+
+    /**
+     * @param  int  $id
+     *
+     * @return mixed
+     */
+    public function find(int $id)
+    {
+        return $this->model->where('id', $id)->first();
+    }
+
+    /**
+     * @param  int  $id
+     *
+     * @return mixed
+     */
+    public function delete(int $id)
+    {
+        return $this->find($id)->delete();
+    }
+
+    /**
+     * @param  int    $id
+     * @param  array  $input
+     *
+     * @return mixed
+     */
+    public function update(int $id, array $input)
+    {
+        $model = $this->find($id);
+        $model->fill($input);
+        $model->save();
+
+        return $model;
+    }
+}
