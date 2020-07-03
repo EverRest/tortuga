@@ -39,7 +39,7 @@ Route::group([ 'prefix' => 'song', 'namespace' => 'Song', 'name' => 'song.', 'mi
     Route::post('/upload', 'SongController@upload')->name('upload');
     Route::put('/update/{id}', 'SongController@update')->name('update');
     Route::delete('/delete/{id}', 'SongController@delete')->name('delete');
-    Route::get('/show/{id}', 'SongController@item')->name('item');
+    Route::get('/{id}', 'SongController@item')->name('item');
     Route::get('/', 'SongController@index')->name('list');
 });
 
@@ -48,6 +48,6 @@ Route::group([ 'prefix' => 'playlist', 'namespace' => 'Playlist', 'name' => 'pla
     Route::post('/create', 'PlaylistController@create')->name('create');
     Route::put('/update/{id}', 'PlaylistController@update')->name('update');
     Route::delete('/delete/{id}', 'PlaylistController@delete')->name('delete');
-    Route::get('/show/{id}', 'PlaylistController@item')->name('item');
+    Route::get('/{id}', 'PlaylistController@item')->name('item');
     Route::get('/', 'PlaylistController@index')->name('list');
 });

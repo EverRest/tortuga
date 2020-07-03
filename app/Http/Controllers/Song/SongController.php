@@ -20,6 +20,14 @@ use Illuminate\Support\Facades\Storage;
  */
 class SongController extends BaseController
 {
+    const SONG_CREATED = "Song successfully created.";
+    const FILE_NOT_FOUND = "Can't find uploaded file.";
+    const FILE_NOT_UPLOADED = "Can't upload file.";
+    const FILE_UPLOADED = "File uploaded.";
+    const SONG_NOT_UPDATED = "Can\'t update song.";
+    const SONG_UPDATED = "File uploaded.";
+    const SONG_NOT_DELETED = "Error while deleting.";
+    const SONG_DELETED = "Song was deleted.";
     /**
      * @var ISongService
      */
@@ -41,7 +49,7 @@ class SongController extends BaseController
      */
     public function index(): JsonResponse
     {
-        return $this->response($this->songService->all(), 'Songs', Response::HTTP_OK);
+        return $this->response($this->songService->all(), '', Response::HTTP_OK);
     }
 
     /**
@@ -55,23 +63,24 @@ class SongController extends BaseController
         $tmp_path = config('songs.paths.tmp'). $file_name;
         $stbl_path = config('songs.paths.stbl'). $file_name;
         $code = Response::HTTP_UNPROCESSABLE_ENTITY;
-        $message = "Can't find uploaded file.";
+        $message = self::FILE_NOT_FOUND;
         $data = null;
 
         if (Storage::disk('public')->exists($tmp_path)) {
             if (!Storage::disk('public')->exists($stbl_path))
                 Storage::disk('public')->move($tmp_path ,  $stbl_path);
 
-                $song = $this->songService->create([
+                $song = [
                     'user_id' => Auth::user()->id,
                     'title' => $request->title,
                     'artist' => $request->artist,
                     'filename' => $file_name
-                ]);
+                ];
+                $res = $this->songService->create($song);
 
                 $code = Response::HTTP_CREATED;
-                $message = "Song successfully created.";
-                $data = $song;
+                $message = self::SONG_CREATED;
+                $data = $res;
         }
 
         return $this->response($data, $message, $code);
@@ -86,9 +95,19 @@ class SongController extends BaseController
     {
         $file = $request->file;
         $fileName = Str::random(10).'_'.time().'.'.$file->extension();
-        $file->move(public_path(config('songs.paths.tmp')), $fileName);
 
-        return $this->response(['fileName' => $fileName], 'File uploaded.', Response::HTTP_OK);
+        $code = Response::HTTP_UNPROCESSABLE_ENTITY;
+        $message = self::FILE_NOT_UPLOADED;
+        $data = null;
+
+        if ($file->move(storage_path(config('songs.paths.tmp')), $fileName))
+        {
+            $data = ['fileName' => $fileName];
+            $message = self::FILE_UPLOADED;
+            $code = Response::HTTP_OK;
+        }
+
+        return $this->response($data, $message, $code);
     }
 
     /**
@@ -112,12 +131,12 @@ class SongController extends BaseController
     public function update(int $id, UpdateRequest $request)
     {
         $code = Response::HTTP_NOT_ACCEPTABLE;
-        $message = "Can\'t update song.";
+        $message = self::SONG_NOT_UPDATED;
         $data = $this->songService->update($id, $request->all());
 
         if (!!$data) {
             $code = Response::HTTP_ACCEPTED;
-            $message = "Song was updated.";
+            $message = self::SONG_UPDATED;
         }
 
         return $this->response($this->songService->find($id), $message, $code);
@@ -131,12 +150,12 @@ class SongController extends BaseController
     public function delete(int $id): JsonResponse
     {
         $code = Response::HTTP_BAD_REQUEST;
-        $message = "Error while deleting.";
+        $message = self::SONG_NOT_DELETED;
         $data = null;
 
         if($this->songService->delete($id)){
             $code = Response::HTTP_OK;
-            $message = "Song was deleted.";
+            $message = self::SONG_DELETED;
             $data = $this->songService->find($id);
         }
 

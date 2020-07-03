@@ -14,8 +14,8 @@ return [
     */
 
     'paths' => [
-        'tmp'  => 'tmp/',
-        'stbl' => 'music/'
+        'tmp'  => 'app/public/tmp/',
+        'stbl' => 'app/public/music/'
     ],
 
 ];

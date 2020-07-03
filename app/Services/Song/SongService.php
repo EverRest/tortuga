@@ -3,6 +3,7 @@
 namespace App\Services\Song;
 
 use App\Services\BaseService;
+use App\Repositories\Song\ISongRepository;
 
 /**
  * Class SongService
@@ -14,9 +15,9 @@ class SongService extends BaseService implements ISongService
     /**
      * SongService constructor.
      *
-     * @param  SongRepository  $repository
+     * @param  ISongRepository  $repository
      */
-    public function __construct(SongRepository $repository)
+    public function __construct(ISongRepository $repository)
     {
         $this->repo = $repository;
     }

@@ -3,6 +3,7 @@
 namespace App\Services\User;
 
 use App\Services\BaseService;
+use App\Repositories\User\IUserRepository;
 
 /**
  * Class UserService
@@ -14,9 +15,9 @@ class UserService extends BaseService implements IUserService
     /**
      * UserService constructor.
      *
-     * @param  UserRepository  $repository
+     * @param  IUserRepository  $repository
      */
-    public function __construct(UserRepository $repository)
+    public function __construct(IUserRepository $repository)
     {
         $this->repo = $repository;
     }

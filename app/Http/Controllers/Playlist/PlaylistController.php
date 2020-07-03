@@ -3,8 +3,6 @@
 namespace App\Http\Controllers\Playlist;
 
 use App\Http\Controllers\BaseController;
-use App\Http\Controllers\Controller;
-use App\Playlist;
 use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\Song\CreateRequest;
@@ -18,14 +16,27 @@ use App\Http\Requests\Song\UpdateRequest;
 class PlaylistController extends BaseController
 {
     /**
+     * @var IPlaylistService
+     */
+    private $playlistService;
+
+    /**
+     * PlaylistController constructor.
+     *
+     * @param  IPlaylistService  $playlistService
+     */
+    public function __construct(IPlaylistService $playlistService)
+    {
+        $this->playlistService = $playlistService;
+    }
+    /**
      * Return a listing of the resource.
      *
      * @return JsonResponse
      */
     public function index(): JsonResponse
     {
-        return response()->json([
-            'data' => Playlist::all()], Response::HTTP_OK);
+        return $this->response($this->playlistService->all(),'', Response::HTTP_OK);
     }
 
     /**
@@ -98,7 +109,7 @@ class PlaylistController extends BaseController
         if ($playlist->save()) {
             return response()->json([
                 'data' => [
-                    "message" => "playlist was updated."
+                    "message" => "Playlist was updated."
                 ]], Response::HTTP_OK);
         } else {
             return response()->json([
@@ -119,7 +130,7 @@ class PlaylistController extends BaseController
         if($playlist->delete()){
             return response()->json([
                 'data' => [
-                    "message" => "playlist was deleted."
+                    "message" => "Playlist was deleted."
                 ]], Response::HTTP_OK);
         } else {
             return response()->json([
