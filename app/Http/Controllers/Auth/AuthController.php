@@ -2,25 +2,39 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\BaseController;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegistrationRequest;
+use App\Services\User\IUserService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use App\User;
-use Illuminate\Support\Facades\Storage;
-use Laravolt\Avatar\Avatar;
 use Illuminate\Support\Str;
-use App\Notifications\Auth\SignupActivate;
 
 /**
  * Class AuthController
  *
  * @package App\Http\Controllers\Auth
  */
-class AuthController extends Controller
+class AuthController extends BaseController
 {
+    /**
+     * @var IUserService
+     */
+    private $userService;
+
+    /**
+     * AuthController constructor.
+     *
+     * @param  IUserService  $userService
+     */
+    public function __construct(IUserService $userService)
+    {
+        $this->userService = $userService;
+    }
     /**
      * Create user
      *
@@ -32,20 +46,21 @@ class AuthController extends Controller
      */
     public function register(RegistrationRequest $request)
     {
-        $user = new User([
+        $code = Response::HTTP_CREATED;
+        $message = "Successfully created user!";
+        $data = null;
+
+        $user = $this->userService->create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password),
             'activation_token' => Str::random(60)
         ]);
 
-        $user->save();
-
+//         Send notification
 //        $user->notify(new SignupActivate($user));
 
-        return response()->json([
-            'message' => 'Successfully created user!'
-        ], 201);
+        return $this->response($data, $message, $code);
     }
 
     /**
@@ -55,15 +70,17 @@ class AuthController extends Controller
      */
     public function activate($token)
     {
+        $message = 'This activation token is invalid.';
+        $code = Response::HTTP_NOT_FOUND;
+        $data = null;
+
         $user = User::where('activation_token', $token)->first();
-        if (!$user) {
-            return response()->json([
-                'message' => 'This activation token is invalid.'
-            ], 404);
-        }
+        if (!$user)
+            return $this->response($data, $message, $code);
         $user->active = true;
         $user->activation_token = '';
         $user->save();
+
         return $user;
     }
 
@@ -79,14 +96,16 @@ class AuthController extends Controller
      */
     public function login(LoginRequest $request)
     {
+        $message = 'Unauthorized.';
+        $code = Response::HTTP_UNAUTHORIZED;
+        $data = null;
+
         $credentials = request(['email', 'password']);
         $credentials['active'] = 1;
         $credentials['deleted_at'] = null;
 
         if(!Auth::attempt($credentials))
-            return response()->json([
-                'message' => 'Unauthorized'
-            ], 401);
+            return $this->response($data, $message, $code);
 
         $user = $request->user();
 
@@ -112,12 +131,15 @@ class AuthController extends Controller
      *
      * @return [string] message
      */
-    public function logout(Request $request)
+    public function logout(Request $request): JsonResponse
     {
+        $code = Response::HTTP_OK;
+        $message = "Successfully logged out.";
+        $data = null;
+
         $request->user()->token()->revoke();
-        return response()->json([
-            'message' => 'Successfully logged out'
-        ]);
+
+        return $this->response($data, $message, $code);
     }
 
     /**
@@ -125,8 +147,12 @@ class AuthController extends Controller
      *
      * @return [json] user object
      */
-    public function user(Request $request)
+    public function user(Request $request): JsonResponse
     {
-        return response()->json($request->user());
+        $code = Response::HTTP_OK;
+        $message = "Successfully created user!";
+        $data = null;
+
+        return $this->response($data, $message, $code);
     }
 }

@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Password;
 
+use App\Http\Controllers\BaseController;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\User;
 use App\PasswordReset;
+use Illuminate\Http\Response;
 use Illuminate\Support\Str;
 use App\Notifications\PasswordReset\PasswordResetRequest;
 use App\Notifications\PasswordReset\PasswordResetSuccess;
@@ -16,7 +18,7 @@ use Carbon\Carbon;
  *
  * @package App\Http\Controllers\Password
  */
-class PasswordResetController extends Controller
+class PasswordResetController extends BaseController
 {
     /**
      * Create token password reset
@@ -26,14 +28,16 @@ class PasswordResetController extends Controller
      */
     public function create(Request $request)
     {
+        $message = "We can\'t find a user with that e-mail address.";
+        $code = Response::HTTP_NOT_FOUND;
+        $data = null;
+
         $request->validate([
             'email' => 'required|string|email',
         ]);
         $user = User::where('email', $request->email)->first();
         if (!$user)
-            return response()->json([
-                'message' => 'We can\'t find a user with that e-mail address.'
-            ], 404);
+            return $this->response($data, $message, $code);
         $passwordReset = PasswordReset::updateOrCreate(
             ['email' => $user->email],
             [
@@ -41,13 +45,14 @@ class PasswordResetController extends Controller
                 'token' => Str::random(60)
              ]
         );
-        if ($user && $passwordReset)
+        if ($user&&$passwordReset)
             $user->notify(
                 new PasswordResetRequest($passwordReset->token)
             );
-        return response()->json([
-            'message' => 'We have e-mailed your password reset link!'
-        ]);
+
+        $message = "We have e-mailed your password reset link!";
+
+        return $this->response($data, $message, $data);
     }
     /**
      * Find token password reset
@@ -58,17 +63,17 @@ class PasswordResetController extends Controller
      */
     public function find($token)
     {
+        $message = "This password reset token is invalid.";
+        $code = Response::HTTP_NOT_FOUND;
+        $data = null;
+
         $passwordReset = PasswordReset::where('token', $token)
             ->first();
         if (!$passwordReset)
-            return response()->json([
-                'message' => 'This password reset token is invalid.'
-            ], 404);
+            return $this->response($data, $message, $code);
         if (Carbon::parse($passwordReset->updated_at)->addMinutes(720)->isPast()) {
             $passwordReset->delete();
-            return response()->json([
-                'message' => 'This password reset token is invalid.'
-            ], 404);
+            return $this->response($data, $message, $code);
         }
         return response()->json($passwordReset);
     }
@@ -84,6 +89,10 @@ class PasswordResetController extends Controller
      */
     public function reset(Request $request)
     {
+        $message = "This password reset token is invalid.";
+        $code = Response::HTTP_NOT_FOUND;
+        $data = null;
+
         $request->validate([
             'email' => 'required|string|email',
             'password' => 'required|string|confirmed',
@@ -94,18 +103,20 @@ class PasswordResetController extends Controller
             ['email', $request->email]
         ])->first();
         if (!$passwordReset)
-            return response()->json([
-                'message' => 'This password reset token is invalid.'
-            ], 404);
+            return $this->response($data, $message, $code);
         $user = User::where('email', $passwordReset->email)->first();
         if (!$user)
-            return response()->json([
-                'message' => 'We can\'t find a user with that e-mail address.'
-            ], 404);
+            return $this->response($data, $message, $code);
+
         $user->password = bcrypt($request->password);
         $user->save();
+
         $passwordReset->delete();
-        $user->notify(new PasswordResetSuccess($passwordReset));
-        return response()->json($user);
+        // Send notification
+        // $user->notify(new PasswordResetSuccess($passwordReset));
+        $data = $user;
+        $code = Response::HTTP_OK;
+
+        return $this->response($data, $message, $code);
     }
 }

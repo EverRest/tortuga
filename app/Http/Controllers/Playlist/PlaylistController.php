@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Playlist;
 
+use App\Http\Controllers\BaseController;
 use App\Http\Controllers\Controller;
 use App\Playlist;
 use Illuminate\Http\Response;
@@ -14,7 +15,7 @@ use App\Http\Requests\Song\UpdateRequest;
  *
  * @package App\Http\Controllers\Playlist
  */
-class PlaylistController extends Controller
+class PlaylistController extends BaseController
 {
     /**
      * Return a listing of the resource.

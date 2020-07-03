@@ -3,7 +3,16 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use App\Repositories\Playlist\IPlaylistRepository;
+use App\Services\Playlist\PlaylistService;
+use App\Services\Playlist\IPlaylistService;
+use App\Repositories\Playlist\PlaylistRepository;
 
+/**
+ * Class PlaylistServiceProvider
+ *
+ * @package App\Providers
+ */
 class PlaylistServiceProvider extends ServiceProvider
 {
     /**

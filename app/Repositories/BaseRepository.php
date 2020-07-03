@@ -87,4 +87,14 @@ abstract class BaseRepository
 
         return $model;
     }
+
+    /**
+     * @param  int  $id
+     *
+     * @return bool
+     */
+    public function exists(int $id)
+    {
+        return !!$this->find($id);
+    }
 }

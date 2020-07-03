@@ -3,7 +3,16 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use App\Repositories\User\IUserRepository;
+use App\Repositories\User\UserRepository;
+use App\Services\User\IUserService;
+use App\Services\User\UserService;
 
+/**
+ * Class UserServiceProvider
+ *
+ * @package App\Providers
+ */
 class UserServiceProvider extends ServiceProvider
 {
     /**
