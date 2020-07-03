@@ -7,7 +7,7 @@ namespace App\Services;
  *
  * @package App\Service
  */
-class BaseService
+abstract class BaseService
 {
     public $repo;
 

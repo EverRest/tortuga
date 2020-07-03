@@ -175,7 +175,9 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-
+        App\Providers\SongServiceProvider::class,
+        App\Providers\UserServiceProvider::class,
+        App\Providers\PlaylistServiceProvider::class
     ],
 
     /*
