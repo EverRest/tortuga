@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class Playlist
@@ -11,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Playlist extends Model
 {
+    use SoftDeletes;
     /**
      * @var string[]
      */

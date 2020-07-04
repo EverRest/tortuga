@@ -2,6 +2,7 @@
 
 namespace App\Services\Playlist;
 
+use App\Repositories\Playlist\IPlaylistRepository;
 use App\Services\BaseService;
 
 /**
@@ -16,7 +17,7 @@ class PlaylistService extends BaseService implements IPlaylistService
      *
      * @param    $repository
      */
-    public function __construct(SongRepository $repository)
+    public function __construct(IPlaylistRepository $repository)
     {
         $this->repo = $repository;
     }

@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Repositories\Traits\Sortable;
 
 /**
  * Class BaseRepository
@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 abstract class BaseRepository
 {
+    use Sortable;
     /**
      * @var string
      */

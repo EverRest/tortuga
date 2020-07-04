@@ -35,19 +35,19 @@ Route::group([ 'prefix' => 'password', 'namespace' => 'Password', 'name' => 'pas
 
 // Song Routes
 Route::group([ 'prefix' => 'song', 'namespace' => 'Song', 'name' => 'song.', 'middleware' => 'auth:api'], function () {
-    Route::post('/create', 'SongController@create')->name('create');
+    Route::post('/', 'SongController@create')->name('create');
     Route::post('/upload', 'SongController@upload')->name('upload');
-    Route::put('/update/{id}', 'SongController@update')->name('update');
-    Route::delete('/delete/{id}', 'SongController@delete')->name('delete');
-    Route::get('/{id}', 'SongController@item')->name('item');
+    Route::put('/{id}', 'SongController@update')->name('update')->where('id', '[0-9]+');
+    Route::delete('/{id}', 'SongController@delete')->name('delete')->where('id', '[0-9]+');
+    Route::get('/{id}', 'SongController@item')->name('item')->where('id', '[0-9]+');
     Route::get('/', 'SongController@index')->name('list');
 });
 
 // Playlist Routes
 Route::group([ 'prefix' => 'playlist', 'namespace' => 'Playlist', 'name' => 'playlist.', 'middleware' => 'api'], function () {
-    Route::post('/create', 'PlaylistController@create')->name('create');
-    Route::put('/update/{id}', 'PlaylistController@update')->name('update');
-    Route::delete('/delete/{id}', 'PlaylistController@delete')->name('delete');
-    Route::get('/{id}', 'PlaylistController@item')->name('item');
+    Route::post('/', 'PlaylistController@create')->name('create');
+    Route::put('/{id}', 'PlaylistController@update')->name('update')->where('id', '[0-9]+');
+    Route::delete('/{id}', 'PlaylistController@delete')->name('delete')->where('id', '[0-9]+');
+    Route::get('/{id}', 'PlaylistController@item')->name('item')->where('id', '[0-9]+');
     Route::get('/', 'PlaylistController@index')->name('list');
 });

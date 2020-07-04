@@ -3,7 +3,6 @@
 namespace App\Repositories\Song;
 
 use App\Repositories\BaseRepository;
-use App\Repositories\Traits\Sortable;
 use App\Song;
 
 /**
@@ -13,8 +12,6 @@ use App\Song;
  */
 class SongRepository extends BaseRepository implements ISongRepository
 {
-    use Sortable;
-
     /**
      * @var Song
      */

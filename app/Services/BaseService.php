@@ -42,7 +42,7 @@ abstract class BaseService
      */
     public function find(int $id)
     {
-        $this->repo->find($id);
+        return $this->repo->find($id);
     }
 
     /**

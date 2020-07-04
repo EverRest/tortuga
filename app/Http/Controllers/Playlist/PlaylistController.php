@@ -7,6 +7,7 @@ use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\Song\CreateRequest;
 use App\Http\Requests\Song\UpdateRequest;
+use App\Services\Playlist\IPlaylistService;
 
 /**
  * Class PlaylistController
@@ -15,6 +16,15 @@ use App\Http\Requests\Song\UpdateRequest;
  */
 class PlaylistController extends BaseController
 {
+    const LIST = "List of playlists.";
+    const NOT_CREATED = "Can't create playlist.";
+    const NOT_UPDATED = "Can't update playlist.";
+    const UPDATED = "Playlist was updated.";
+    const CREATED = "Playlist successfully created.";
+    const NOT_FOUND = "Playlist not found.";
+    const ITEM = "Playlist.";
+    const DELETED = "Playlist was deleted.";
+    const NOT_DELETED = "Error while deleting.";
     /**
      * @var IPlaylistService
      */
@@ -36,7 +46,7 @@ class PlaylistController extends BaseController
      */
     public function index(): JsonResponse
     {
-        return $this->response($this->playlistService->all(),'', Response::HTTP_OK);
+        return $this->response($this->playlistService->all(),self::LIST, Response::HTTP_OK);
     }
 
     /**
@@ -46,31 +56,16 @@ class PlaylistController extends BaseController
      */
     public function create(CreateRequest $request): JsonResponse
     {
-        $file_name = $request->fileName;
-        $tmp_path = config('playlists.paths.tmp'). $file_name;
-        $stbl_path = config('playlists.paths.stbl'). $file_name;
+        $code = Response::HTTP_UNPROCESSABLE_ENTITY;
+        $message = self::NOT_CREATED;
+        $data = null;
 
-        if (Storage::disk('public')->exists($tmp_path)) {
-            if (!Storage::disk('public')->exists($stbl_path))
-                Storage::disk('public')->move($tmp_path ,  $stbl_path);
-
-            playlist::firstOrCreate([
-                'user_id' => Auth::user()->id,
-                'title' => $request->title,
-                'artist' => $request->artist,
-                'filename' => $file_name
-            ]);
-
-            return response()->json([
-                'data' => [
-                    'message' => 'Playlist successfully created.',
-                ]], Response::HTTP_CREATED);
-        } else {
-            return response()->json([
-                'data' => [
-                    'message' => 'Can\'t create playlist.',
-                ]], Response::HTTP_UNPROCESSABLE_ENTITY);
+        if ($data = $this->playlistService->create($request->all())) {
+            $code = Response::HTTP_CREATED;
+            $message = self::CREATED;
         }
+
+        return $this->response($data, $message, $code);
     }
 
     /**
@@ -80,42 +75,30 @@ class PlaylistController extends BaseController
      *
      * @return Response
      */
-    public function item($id): JsonResponse
+    public function item(int $id): JsonResponse
     {
-        if (playlist::where('id', $id)->exists()) {
-            return response()->json([
-                'data' => Playlist::where('id', $id)->get()
-                    ->toJson(JSON_PRETTY_PRINT)], Response::HTTP_OK);
-        } else {
-            return response()->json([
-                "message" => "Playlist not found"
-            ], Response::HTTP_NOT_FOUND);
-        }
+        return $this->response($this->playlistService->find($id), self::ITEM, Response::HTTP_OK);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param                 $id
+     * @param  int            $id
      * @param  UpdateRequest  $request
      */
-    public function update($id, UpdateRequest $request)
+    public function update(int $id, UpdateRequest $request)
     {
-        $playlist = playlist::findOrFail($id);
+        $code = Response::HTTP_NOT_ACCEPTABLE;
+        $message = self::NOT_UPDATED;
+        $data = null;
 
-        $playlist->title = $request->title;
-        $playlist->artist = $request->artist;
-
-        if ($playlist->save()) {
-            return response()->json([
-                'data' => [
-                    "message" => "Playlist was updated."
-                ]], Response::HTTP_OK);
-        } else {
-            return response()->json([
-                "message" => "Can\'t update playlist.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         "
-            ], Response::HTTP_BAD_REQUEST);
+        if ($this->playlistService->update($request->all())) {
+            $code = Response::HTTP_OK;
+            $message = self::UPDATED;
+            $data = $this->playlistService->find($id);
         }
+
+        $this->response($data, $message, $code);
     }
 
     /**
@@ -125,18 +108,15 @@ class PlaylistController extends BaseController
      */
     public function delete(int $id): JsonResponse
     {
-        $playlist = playlist::findOrfail($id);
+        $code = Response::HTTP_OK;
+        $message = self::NOT_DELETED;
+        $data = null;
 
-        if($playlist->delete()){
-            return response()->json([
-                'data' => [
-                    "message" => "Playlist was deleted."
-                ]], Response::HTTP_OK);
-        } else {
-            return response()->json([
-                'data' => [
-                    "message" => "Error while deleting."
-                ]], Response::HTTP_BAD_REQUEST);
+        if ($this->playlistService->delete($id)) {
+           $message = self::DELETED;
+           $code = Response::HTTP_ACCEPTED;
         }
+
+        return $this->response($data, $message, $code);
     }
 }

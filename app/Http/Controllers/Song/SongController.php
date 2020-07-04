@@ -20,6 +20,8 @@ use Illuminate\Support\Facades\Storage;
  */
 class SongController extends BaseController
 {
+    const SONGS = "List Of Songs.";
+    const SONG = "Song.";
     const SONG_CREATED = "Song successfully created.";
     const FILE_NOT_FOUND = "Can't find uploaded file.";
     const FILE_NOT_UPLOADED = "Can't upload file.";
@@ -49,7 +51,7 @@ class SongController extends BaseController
      */
     public function index(): JsonResponse
     {
-        return $this->response($this->songService->all(), '', Response::HTTP_OK);
+        return $this->response($this->songService->all(), self::SONGS, Response::HTTP_OK);
     }
 
     /**
@@ -62,6 +64,7 @@ class SongController extends BaseController
         $file_name = $request->fileName;
         $tmp_path = config('songs.paths.tmp'). $file_name;
         $stbl_path = config('songs.paths.stbl'). $file_name;
+
         $code = Response::HTTP_UNPROCESSABLE_ENTITY;
         $message = self::FILE_NOT_FOUND;
         $data = null;
@@ -70,17 +73,16 @@ class SongController extends BaseController
             if (!Storage::disk('public')->exists($stbl_path))
                 Storage::disk('public')->move($tmp_path ,  $stbl_path);
 
-                $song = [
-                    'user_id' => Auth::user()->id,
-                    'title' => $request->title,
-                    'artist' => $request->artist,
-                    'filename' => $file_name
-                ];
-                $res = $this->songService->create($song);
+                $song = $this->songService->create([
+                        'user_id' => Auth::user()->id,
+                        'title' => $request->title,
+                        'artist' => $request->artist,
+                        'filename' => $file_name
+                    ]);
 
                 $code = Response::HTTP_CREATED;
                 $message = self::SONG_CREATED;
-                $data = $res;
+                $data = $song;
         }
 
         return $this->response($data, $message, $code);
@@ -119,7 +121,7 @@ class SongController extends BaseController
      */
     public function item(int $id): JsonResponse
     {
-        return $this->response($this->songService->find($id), '', Response::HTTP_OK);
+        return $this->response($this->songService->find($id), self::SONG, Response::HTTP_OK);
     }
 
     /**
