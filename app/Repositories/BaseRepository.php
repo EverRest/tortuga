@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Repositories\Traits\Relationable;
 use App\Repositories\Traits\Sortable;
 
 /**
@@ -11,7 +12,7 @@ use App\Repositories\Traits\Sortable;
  */
 abstract class BaseRepository
 {
-    use Sortable;
+    use Sortable, Relationable;
     /**
      * @var string
      */
@@ -26,7 +27,8 @@ abstract class BaseRepository
      */
     public function all()
     {
-        return $this->model->orderBy($this->sortBy, $this->sortOrder)->get();
+        return $this->model->with($this->relations)
+            ->orderBy($this->sortBy, $this->sortOrder)->get();
     }
 
     /**
@@ -36,8 +38,8 @@ abstract class BaseRepository
      */
     public function paginated(int $paginate)
     {
-        return $this->model->orderBy($this->sortBy, $this->sortOrder)
-            ->paginate($paginate);
+        return $this->model->with($this->relations)
+            ->orderBy($this->sortBy, $this->sortOrder)->paginate($paginate);
     }
 
     /**
@@ -61,7 +63,7 @@ abstract class BaseRepository
      */
     public function find(int $id)
     {
-        return $this->model->where('id', $id)->first();
+        return $this->model->with($this->relations)->where('id', $id)->first();
     }
 
     /**

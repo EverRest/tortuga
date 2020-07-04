@@ -24,7 +24,7 @@ class UpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            "name"        => "sometimes|string|max:255|unique:playlists",
+            "name"        => "sometimes|string|max:255",
             "description" => "sometimes|string",
             "songs"       => "required|array",
             "songs.*"     => "sometimes|numeric|exists:songs,id"

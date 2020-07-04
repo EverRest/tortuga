@@ -20,5 +20,6 @@ class PlaylistService extends BaseService implements IPlaylistService
     public function __construct(IPlaylistRepository $repository)
     {
         $this->repo = $repository;
+        $this->repo->setRelations(['songs']);
     }
 }
