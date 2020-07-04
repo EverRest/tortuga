@@ -13,7 +13,7 @@ class CreateRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,10 @@ class CreateRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            "name" => "required|string|max:255|unique:playlists",
+            "description" => "sometimes|string|max:255|unique:playlists",
+            "songs"       => "required|array",
+            "songs.*"     => "sometimes|numeric|exists:songs,id"
         ];
     }
 }

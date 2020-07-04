@@ -17,13 +17,23 @@ class Playlist extends Model
      * @var string[]
      */
     protected $fillable = [
-        'title',
-        'genre',
+        'name',
         'description'
     ];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function users()
     {
-        return $this->belongsToMany('App\User', 'user_playlist', 'playlist_id', 'user_id');
+        return $this->belongsToMany('App\User', 'users_playlists', 'playlist_id', 'user_id');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function songs()
+    {
+        return $this->belongsToMany('App\Song', 'songs_playlists', 'playlist_id', 'song_id');
     }
 }

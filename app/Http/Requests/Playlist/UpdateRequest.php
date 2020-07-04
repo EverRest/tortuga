@@ -13,7 +13,7 @@ class UpdateRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,10 @@ class UpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            "name"        => "sometimes|string|max:255|unique:playlists",
+            "description" => "sometimes|string",
+            "songs"       => "required|array",
+            "songs.*"     => "sometimes|numeric|exists:songs,id"
         ];
     }
 }

@@ -24,7 +24,7 @@ abstract class BaseService
      */
     public function paginated()
     {
-        return $this->repo->paginated(config('paginate'));
+        return $this->repo->paginated(config('paginate.default'));
     }
 
     /**

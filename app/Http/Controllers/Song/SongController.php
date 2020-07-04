@@ -51,7 +51,7 @@ class SongController extends BaseController
      */
     public function index(): JsonResponse
     {
-        return $this->response($this->songService->all(), self::SONGS, Response::HTTP_OK);
+        return $this->response($this->songService->paginated(), self::SONGS, Response::HTTP_OK);
     }
 
     /**

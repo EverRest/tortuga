@@ -29,4 +29,35 @@ class PlaylistRepository extends BaseRepository implements IPlaylistRepository
     {
         $this->model = $playlist;
     }
+
+    /**
+     * @param  array  $input
+     *
+     * @return mixed|void
+     */
+    public function create(array $input)
+    {
+        $playlist = $this->model;
+        $playlist->fill($input);
+        $playlist->save();
+        $playlist->songs()->sync($input['songs']);
+
+        return $playlist;
+    }
+
+    /**
+     * @param  int    $id
+     * @param  array  $input
+     *
+     * @return mixed|void
+     */
+    public function update(int $id, array $input)
+    {
+        $playlist = $this->find($id);
+        $playlist->fill($input);
+        $playlist->save();
+        $playlist->songs()->sync($input['songs']);
+
+        return $playlist;
+    }
 }

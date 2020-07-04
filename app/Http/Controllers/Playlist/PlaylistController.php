@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Playlist;
 use App\Http\Controllers\BaseController;
 use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
-use App\Http\Requests\Song\CreateRequest;
-use App\Http\Requests\Song\UpdateRequest;
+use App\Http\Requests\Playlist\CreateRequest;
+use App\Http\Requests\Playlist\UpdateRequest;
 use App\Services\Playlist\IPlaylistService;
 
 /**
@@ -46,7 +46,7 @@ class PlaylistController extends BaseController
      */
     public function index(): JsonResponse
     {
-        return $this->response($this->playlistService->all(),self::LIST, Response::HTTP_OK);
+        return $this->response($this->playlistService->paginated(),self::LIST, Response::HTTP_OK);
     }
 
     /**
@@ -92,13 +92,13 @@ class PlaylistController extends BaseController
         $message = self::NOT_UPDATED;
         $data = null;
 
-        if ($this->playlistService->update($request->all())) {
+        if ($this->playlistService->update($id, $request->all())) {
             $code = Response::HTTP_OK;
             $message = self::UPDATED;
             $data = $this->playlistService->find($id);
         }
 
-        $this->response($data, $message, $code);
+        return $this->response($data, $message, $code);
     }
 
     /**
