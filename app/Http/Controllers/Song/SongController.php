@@ -57,6 +57,8 @@ class SongController extends BaseController
     /**
      * Add new resource.
      *
+     * @param  CreateRequest  $request
+     *
      * @return JsonResponse
      */
     public function create(CreateRequest $request): JsonResponse
@@ -91,6 +93,8 @@ class SongController extends BaseController
     /**
      * Upload file
      *
+     * @param  UploadRequest  $request
+     *
      * @return JsonResponse
      */
     public function upload(UploadRequest $request)
@@ -117,7 +121,7 @@ class SongController extends BaseController
      *
      * @param  int  $id
      *
-     * @return Response
+     * @return JsonResponse
      */
     public function item(int $id): JsonResponse
     {
@@ -129,6 +133,8 @@ class SongController extends BaseController
      *
      * @param  int            $id
      * @param  UpdateRequest  $request
+     *
+     * @return JsonResponse
      */
     public function update(int $id, UpdateRequest $request)
     {
@@ -145,6 +151,8 @@ class SongController extends BaseController
     }
 
     /**
+     * Delete resource by id
+     *
      * @param  int  $id
      *
      * @return JsonResponse

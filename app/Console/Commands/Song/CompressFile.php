@@ -34,9 +34,8 @@ class CompressFile extends Command
      *
      * @return void
      */
-    public function __construct(string $fileName)
+    public function __construct()
     {
-        $this->fileName = $fileName;
         parent::__construct();
     }
 
@@ -47,11 +46,10 @@ class CompressFile extends Command
      */
     public function handle()
     {
-        $path = __DIR__.DIRECTORY_SEPARATOR.config('paths.stbl');
+        chdir('/');
         exec(
-            'ffmpeg -i ' . $path . DIRECTORY_SEPARATOR . $this->fileName .
-            '.mpga -acodec libmp3lame -ab 64k -ac 1 -ar 11025 ' . $path .
-            DIRECTORY_SEPARATOR . $this->fileName . '.mp3;'
+            'cd storage/app/public/music&&ffmpeg -i 9ETO6KZ6tN_1593867302.mpga -acodec libmp3lame -ab 64k -ac 1 -ar 11025 ' . $path .
+            DIRECTORY_SEPARATOR . '9ETO6KZ6tN_1593867302' . '.mp3;'
         );
     }
 }

@@ -52,6 +52,8 @@ class PlaylistController extends BaseController
     /**
      * Add new resource.
      *
+     * @param  CreateRequest  $request
+     *
      * @return JsonResponse
      */
     public function create(CreateRequest $request): JsonResponse
@@ -73,7 +75,7 @@ class PlaylistController extends BaseController
      *
      * @param  int  $id
      *
-     * @return Response
+     * @return JsonResponse
      */
     public function item(int $id): JsonResponse
     {
@@ -85,6 +87,8 @@ class PlaylistController extends BaseController
      *
      * @param  int            $id
      * @param  UpdateRequest  $request
+     *
+     * @return JsonResponse
      */
     public function update(int $id, UpdateRequest $request)
     {
@@ -102,6 +106,8 @@ class PlaylistController extends BaseController
     }
 
     /**
+     * Delete by id
+     *
      * @param  int  $id
      *
      * @return JsonResponse
